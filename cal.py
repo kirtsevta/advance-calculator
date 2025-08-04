@@ -18,20 +18,12 @@ div.stButton > button {
     border-radius: 10px;
     height: 60px;
     width: 100%;
-}
-div.calc-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-div.calc-row > div {
-    flex: 1;
-    margin: 0 5px;
+    margin-bottom: 5px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Session state
+# Initialize session state
 if "expression" not in st.session_state:
     st.session_state.expression = ""
 
@@ -41,13 +33,13 @@ buttons = [
     ["7", "8", "9", "*"],
     ["4", "5", "6", "-"],
     ["1", "2", "3", "+"],
-    [".", "0", "=", ""]
+    [".", "0", "=", "←"]
 ]
 
-# Display
+# Display field
 st.text_input("Expression", value=st.session_state.expression, key="display", label_visibility="collapsed")
 
-# Button actions
+# Button click handler
 def click(label):
     if label == "C":
         st.session_state.expression = ""
@@ -66,12 +58,13 @@ def click(label):
             st.session_state.expression = str(math.sqrt(float(eval(st.session_state.expression))))
         except:
             st.session_state.expression = "Error"
-    elif label != "":
+    elif label == "←":
+        st.session_state.expression = st.session_state.expression[:-1]
+    else:
         st.session_state.expression += label
 
 # Render buttons
 for row in buttons:
     cols = st.columns(4)
     for i, label in enumerate(row):
-        if label:
-            cols[i].button(label, key=label, on_click=click, args=(label,))
+        cols[i].button(label, key=f"btn_{label}", on_click=click, args=(label,))
